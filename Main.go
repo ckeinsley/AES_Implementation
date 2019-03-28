@@ -8,7 +8,7 @@ import (
 
 	"strings"
 
-	"github.com/ckeinsley/operations"
+	"github.com/ckeinsley/AES_Implementation/operations"
 	"github.com/hashicorp/vault/helper/xor"
 )
 
@@ -36,8 +36,28 @@ func extractInputs(data string) (int, int, []byte, []byte) {
 	return int(iterations), int(rounds), key, plaintext
 }
 
-func runIteration(rounds int, extendedkey []byte, plaintext []byte) []byte {
-	return plaintext
+func runIteration(rounds int, extendedkey [][]byte, plaintext []byte) []byte {
+	plaintext2D := operations.ConvertTo2D(plaintext, 4, 4)
+
+	// Initial AddRoundKey
+	operations.AddRoundKey(plaintext2D, extendedkey, 0)
+	// fmt.Printf("%#v\n", plaintext2D)
+
+	for i := 1; i < rounds; i++ {
+		operations.ByteSubBlock(plaintext2D)
+		// fmt.Printf("%#v\n", plaintext2D)
+		operations.ShiftRow(plaintext2D)
+		// fmt.Printf("%#v\n", plaintext2D)
+		// Mix Columns
+
+		// fmt.Printf("%#v\n", plaintext2D)
+		operations.AddRoundKey(plaintext2D, extendedkey, i)
+		// fmt.Printf("%#v\n", plaintext2D)
+	}
+	operations.ByteSubBlock(plaintext2D)
+	operations.ShiftRow(plaintext2D)
+
+	return operations.ConvertTo1D(plaintext2D)
 }
 
 func main() {
@@ -48,7 +68,7 @@ func main() {
 	var output []byte
 	extendedkey := operations.ExtendKey(key)
 	for i := 0; i < iterations; i++ {
-		output = runIteration(rounds, key, plaintext)
+		output = runIteration(rounds, extendedkey, plaintext)
 		if i != iterations-1 {
 			output, err = xor.XORBytes(output, plaintext)
 		}
