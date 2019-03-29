@@ -20,7 +20,8 @@ func errorCheck(err error, message string) {
 }
 
 func extractInputs(data string) (int, int, []byte, []byte) {
-	lines := strings.Split(data, "\n")
+	data2 := strings.Replace(data, "\r", "", -1)
+	lines := strings.Split(data2, "\n")
 	iterations, err := strconv.ParseInt(lines[0], 10, 64)
 	errorCheck(err, "Unable to parse number of iterations")
 
