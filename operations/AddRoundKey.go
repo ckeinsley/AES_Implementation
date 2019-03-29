@@ -64,17 +64,18 @@ func specialRow(baseExtendedKey [][]byte, row int) {
 
 	ShiftCol(keySlice)
 	ByteSubWholeByte(keySlice)
-	keySlice[0] ^= roundKeys[0]
+
+	keySlice[0] ^= roundKeys[row/4-1]
 
 	baseExtendedKey[0][row] = keySlice[0]
 	baseExtendedKey[1][row] = keySlice[1]
 	baseExtendedKey[2][row] = keySlice[2]
 	baseExtendedKey[3][row] = keySlice[3]
 
-	baseExtendedKey[0][row] ^= baseExtendedKey[0][row-4]
-	baseExtendedKey[0][row] ^= baseExtendedKey[0][row-4]
-	baseExtendedKey[0][row] ^= baseExtendedKey[0][row-4]
-	baseExtendedKey[0][row] ^= baseExtendedKey[0][row-4]
+	baseExtendedKey[0][row] = baseExtendedKey[0][row] ^ baseExtendedKey[0][row-4]
+	baseExtendedKey[1][row] = baseExtendedKey[1][row] ^ baseExtendedKey[1][row-4]
+	baseExtendedKey[2][row] = baseExtendedKey[2][row] ^ baseExtendedKey[2][row-4]
+	baseExtendedKey[3][row] = baseExtendedKey[3][row] ^ baseExtendedKey[3][row-4]
 }
 
 func normalRow(baseExtendedKey [][]byte, row int) {
@@ -105,22 +106,19 @@ func AddRoundKey(block [][]byte, fullKey [][]byte, round int) {
 	i4 := i3 + 1
 
 	block[0][0] ^= fullKey[0][i1]
-	block[0][1] ^= fullKey[1][i1]
-	block[0][2] ^= fullKey[2][i1]
-	block[0][3] ^= fullKey[3][i1]
-
-	block[1][0] ^= fullKey[0][i2]
+	block[0][1] ^= fullKey[0][i2]
+	block[0][2] ^= fullKey[0][i3]
+	block[0][3] ^= fullKey[0][i4]
+	block[1][0] ^= fullKey[1][i1]
 	block[1][1] ^= fullKey[1][i2]
-	block[1][2] ^= fullKey[2][i2]
-	block[1][3] ^= fullKey[3][i2]
-
-	block[2][0] ^= fullKey[0][i3]
-	block[2][1] ^= fullKey[1][i3]
+	block[1][2] ^= fullKey[1][i3]
+	block[1][3] ^= fullKey[1][i4]
+	block[2][0] ^= fullKey[2][i1]
+	block[2][1] ^= fullKey[2][i2]
 	block[2][2] ^= fullKey[2][i3]
-	block[2][3] ^= fullKey[3][i3]
-
-	block[3][0] ^= fullKey[0][i4]
-	block[3][1] ^= fullKey[1][i4]
-	block[3][2] ^= fullKey[2][i4]
+	block[2][3] ^= fullKey[2][i4]
+	block[3][0] ^= fullKey[3][i1]
+	block[3][1] ^= fullKey[3][i2]
+	block[3][2] ^= fullKey[3][i3]
 	block[3][3] ^= fullKey[3][i4]
 }

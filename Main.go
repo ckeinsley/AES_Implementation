@@ -41,21 +41,18 @@ func runIteration(rounds int, extendedkey [][]byte, plaintext []byte) []byte {
 
 	// Initial AddRoundKey
 	operations.AddRoundKey(plaintext2D, extendedkey, 0)
-	// fmt.Printf("%#v\n", plaintext2D)
 
-	for i := 1; i < rounds; i++ {
+	var i int
+	for i = 1; i < rounds; i++ {
 		operations.ByteSubBlock(plaintext2D)
-		// fmt.Printf("%#v\n", plaintext2D)
 		operations.ShiftRow(plaintext2D)
-		// fmt.Printf("%#v\n", plaintext2D)
-		// Mix Columns
-
-		// fmt.Printf("%#v\n", plaintext2D)
+		operations.MixColumn(plaintext2D)
 		operations.AddRoundKey(plaintext2D, extendedkey, i)
-		// fmt.Printf("%#v\n", plaintext2D)
 	}
+
 	operations.ByteSubBlock(plaintext2D)
 	operations.ShiftRow(plaintext2D)
+	operations.AddRoundKey(plaintext2D, extendedkey, i)
 
 	return operations.ConvertTo1D(plaintext2D)
 }
@@ -65,10 +62,11 @@ func main() {
 	errorCheck(err, "Unable to read input file ./aesinput.txt")
 	iterations, rounds, key, plaintext := extractInputs(string(data))
 
-	var output []byte
+	output := plaintext
 	extendedkey := operations.ExtendKey(key)
+
 	for i := 0; i < iterations; i++ {
-		output = runIteration(rounds, extendedkey, plaintext)
+		output = runIteration(rounds, extendedkey, output)
 		if i != iterations-1 {
 			output, err = xor.XORBytes(output, plaintext)
 		}
