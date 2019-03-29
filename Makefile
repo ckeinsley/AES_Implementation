@@ -1,6 +1,6 @@
 BINARY_NAME = aes_encrypt
 
-all: build-linux build-windows build
+all: build build-linux build-windows build-windows_64
 
 build:
 	go get -t -v
@@ -13,11 +13,15 @@ run:
 
 build-linux:
 	go get -t -v
-	GOOSCGO_ENABLED=0 GOOS=windows GOARCH=386 go build -a -installsuffix cgo -o $(BINARY_NAME)_linux -v
+	GOOSCGO_ENABLED=0 GOOS=linux GOARCH=386 go build -a -installsuffix cgo -o $(BINARY_NAME)_linux -v
 
 build-windows:
 	go get -t -v
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o $(BINARY_NAME)_windows -v
+	CGO_ENABLED=0 GOOS=windows GOARCH=386 go build -a -installsuffix cgo -o $(BINARY_NAME)_windows_386.exe -v
+
+build-windows_64:
+	go get -t -v
+	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -a -installsuffix cgo -o $(BINARY_NAME)_windows_64.exe -v
 
 clean:
 	rm $(BINARY_NAME)*
