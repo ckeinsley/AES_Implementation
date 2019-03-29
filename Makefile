@@ -25,11 +25,11 @@ build-windows_64:
 
 build_mac_386:
 	go get -t -v
-	CGO_ENABLED=0 GOOS=darwin GOARCH=386 go build -a -installsuffix cgo -o $(BINARY_NAME)_mac_386.exe -v
+	CGO_ENABLED=0 GOOS=darwin GOARCH=386 go build -a -installsuffix cgo -o $(BINARY_NAME)_mac_386 -v
 
 build_mac_64:
 	go get -t -v
-	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -a -installsuffix cgo -o $(BINARY_NAME)_mac_64.exe -v
+	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -a -installsuffix cgo -o $(BINARY_NAME)_mac_64 -v
 
 
 clean:
